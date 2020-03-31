@@ -1,8 +1,6 @@
 package task1;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class LogSplitter {
 
@@ -22,21 +20,39 @@ public class LogSplitter {
     public static void splitFile(String fileName, int fileSize) {
         int newFileSize = fileSize / 10;
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String fileNameTemplate = "log";
             if (fileSize % 10 == 0) {
                 for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < newFileSize; j++) {
-                        System.out.println(reader.readLine());
+                    int num = i + 1;
+                    String currentFileName = fileNameTemplate + " " + num;
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFileName))){
+                        for (int j = 0; j < newFileSize; j++) {
+                            writer.write(reader.readLine() + "\n");
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
                     }
                 }
             }
             else {
                 for (int i = 0; i < 9; i++) {
-                    for (int j = 0; j < newFileSize; j++) {
-                        System.out.println(reader.readLine());
+                    int num = i + 1;
+                    String currentFileName = fileNameTemplate + " " + num;
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFileName))){
+                        for (int j = 0; j < newFileSize; j++) {
+                            writer.write(reader.readLine() + "\n");
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
                     }
                 }
-                for (int j = 0; j < newFileSize + fileSize % 10; j++) {
-                    System.out.print(reader.readLine() + " ");
+                String currentFileName = fileNameTemplate + " 10";
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentFileName))){
+                    for (int j = 0; j < newFileSize + fileSize % 10; j++) {
+                        writer.write(reader.readLine() + "\n");
+                    }
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         }
