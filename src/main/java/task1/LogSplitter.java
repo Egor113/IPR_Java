@@ -17,10 +17,9 @@ public class LogSplitter {
         }
     }
 
-    public static void splitFile(String fileName) {
+    public static void splitFile(String fileName, String fileNameTemplate) {
         int newFileSize = fileSize / 10;
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String fileNameTemplate = "log";
             if (fileSize % 10 == 0) {
                 for (int i = 0; i < 10; i++) {
                     int num = i + 1;
@@ -62,8 +61,8 @@ public class LogSplitter {
     }
 
     public static void main(String[] args) {
-        getFileLength("main.log");
-        splitFile("main.log");
+        getFileLength(args[0]);
+        splitFile(args[0], args[1]);
     }
 
 }
