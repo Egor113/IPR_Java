@@ -10,7 +10,7 @@ public class LogParser {
     static String newFileName;
     static BufferedWriter writer;
 
-    public static void readFile(String fileName) {
+    public static void findRegExp(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String str;
             Pattern pattern = Pattern.compile(patternStr);
@@ -31,11 +31,11 @@ public class LogParser {
         if (dir.isDirectory()) {
             for (File item : dir.listFiles()) {
                 if (!item.isDirectory()) {
-                    readFile(item.getName());
+                    findRegExp(item.getName());
                 }
             }
         } else {
-            readFile(dirName);
+            findRegExp(dirName);
         }
         writer.close();
     }
