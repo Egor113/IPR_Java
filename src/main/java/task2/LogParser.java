@@ -10,6 +10,11 @@ public class LogParser {
     static String newFileName;
     static BufferedWriter writer;
 
+    public LogParser(String patternStr, String newFileName) {
+        LogParser.patternStr = patternStr;
+        LogParser.newFileName = newFileName;
+    }
+
     public static void findRegExp(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String str;
@@ -40,13 +45,24 @@ public class LogParser {
         writer.close();
     }
 
-    public LogParser(String patternStr, String newFileName) {
-        LogParser.patternStr = patternStr;
-        LogParser.newFileName = newFileName;
+    public static void splitFile(String fileName){
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String str;
+            while ((str = reader.readLine()) != null) {
+                String splitStr = str.replaceAll("\\s+", ";");
+                System.out.println(splitStr);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
+
     public static void main(String[] args) throws IOException {
-        LogParser parser = new LogParser("Disc \\[applyToPos=0, pos_ID=14, discType=256, ServerDiscType=12", "newFile.txt");
-        getFiles("LOGS");
+//        LogParser parser = new LogParser("Disc \\[applyToPos=0, pos_ID=14, discType=256, ServerDiscType=12", "newFile.txt");
+//        getFiles("LOGS");
+        splitFile("log_1.log");
     }
 }
