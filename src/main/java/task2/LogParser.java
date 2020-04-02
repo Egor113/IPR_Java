@@ -45,13 +45,15 @@ public class LogParser {
         writer.close();
     }
 
-    public static void splitFile(String fileName){
-
+    public static void splitFile(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            String str;
-            while ((str = reader.readLine()) != null) {
-                String splitStr = str.replaceAll("\\s+", ";");
-                System.out.println(splitStr);
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("splitFile.csv"))) {
+                String str;
+                while ((str = reader.readLine()) != null) {
+                    writer.write(str.replaceAll("\\s+", ";") + "\n");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
