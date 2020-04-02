@@ -49,8 +49,43 @@ public class LogParser {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("splitFile.csv"))) {
                 String str;
+                Pattern patternMessType = Pattern.compile("DEBUG:|TRACE:|INFO :|WARN :");
+                Pattern patternAddress = Pattern.compile("[0-9]+[.]+[0-9]+[.]+[0-9]+[.]+[0-9]+[:]+[0-9]+");
                 while ((str = reader.readLine()) != null) {
-                    writer.write(str.replaceAll("\\s+", ";") + "\n");
+                    Matcher matcherMessType = patternMessType.matcher(str);
+                    String bufferBegin = "";
+                    String bufferEnd = "";
+                    if (matcherMessType.find()) {
+                        bufferBegin = str.substring(0, matcherMessType.end());
+                        bufferEnd = str.substring(matcherMessType.end(), str.length());
+                    }
+                    bufferBegin = bufferBegin.replaceAll("\\s+", ";");
+                    String address = "", info = "";
+                    if ((str.contains("DEBUG:") || str.contains("TRACE:"))){
+                        Matcher matcherAddress = patternAddress.matcher(bufferEnd);
+                        if (matcherAddress.find()){
+                            address = bufferEnd.substring(matcherAddress.start(), matcherAddress.end());
+                            info = bufferEnd.substring(matcherAddress.end(), bufferEnd.length());
+                        }
+                        else {
+                            info = bufferEnd;
+                        }
+                    }
+                    else {
+                        info = bufferEnd;
+                    }
+                    if (address.isEmpty()){
+                        System.out.println(bufferBegin + " + " + info);
+                    } else {
+                        System.out.println(bufferBegin + " + " + address + " + " + info);
+                    }
+//                    System.out.println(bufferBegin);
+                    if (matcherMessType.find()) {
+                        //System.out.println(str.substring(0, matcherMessType.end()) + " + " + str.substring(matcherMessType.end(), str.length() - 1));
+                    }
+                    //String dataStr = str.substring(0, m);
+                    //System.out.println(dataStr);
+                    //writer.write(str.replaceAll("\\s+", ";") + "\n");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -65,6 +100,6 @@ public class LogParser {
     public static void main(String[] args) throws IOException {
 //        LogParser parser = new LogParser("Disc \\[applyToPos=0, pos_ID=14, discType=256, ServerDiscType=12", "newFile.txt");
 //        getFiles("LOGS");
-        splitFile("log_1.log");
+        splitFile("log_1_1_1.log");
     }
 }
