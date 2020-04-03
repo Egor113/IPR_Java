@@ -8,7 +8,6 @@ public class LogParser {
 
     String patternStr;
     String newFileNameRegExp;
-    char splitterType;
     String newFileNameSplit;
     BufferedWriter writer;
 
@@ -17,8 +16,7 @@ public class LogParser {
         this.newFileNameRegExp = newFileNameRegExp;
     }
 
-    public LogParser(char splitterType, String newFileNameSplit) {
-        this.splitterType = splitterType;
+    public LogParser(String newFileNameSplit) {
         this.newFileNameSplit = newFileNameSplit;
     }
 
@@ -89,7 +87,7 @@ public class LogParser {
                     else {
                         info = bufferEnd.substring(2, bufferEnd.length());
                     }
-                    writer.write(bufferBegin + splitterType + address + splitterType + info + "\n");
+                    writer.write(bufferBegin + ";" + address + ";" + info + "\n");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
