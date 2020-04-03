@@ -6,33 +6,23 @@ import java.util.regex.Pattern;
 
 public class LogParser {
 
-    static String patternStr;
-    static String newFileNameRegExp;
-    static char splitterType;
-    static String newFileNameSplit;
-    static BufferedWriter writer;
+    String patternStr;
+    String newFileNameRegExp;
+    char splitterType;
+    String newFileNameSplit;
+    BufferedWriter writer;
 
-    public static void setPatternStr(String patternStr) {
-        LogParser.patternStr = patternStr;
+    public LogParser(String patternStr, String newFileNameRegExp) {
+        this.patternStr = patternStr;
+        this.newFileNameRegExp = newFileNameRegExp;
     }
 
-    public static void setNewFileNameRegExp(String newFileNameRegExp) {
-        LogParser.newFileNameRegExp = newFileNameRegExp;
+    public LogParser(char splitterType, String newFileNameSplit) {
+        this.splitterType = splitterType;
+        this.newFileNameSplit = newFileNameSplit;
     }
 
-    public static void setSplitterType(char splitterType) {
-        LogParser.splitterType = splitterType;
-    }
-
-    public static void setNewFileNameSplit(String newFileNameSplit) {
-        LogParser.newFileNameSplit = newFileNameSplit;
-    }
-
-    public static void setWriter(BufferedWriter writer) {
-        LogParser.writer = writer;
-    }
-
-    public static void findRegExp(String fileName) {
+    public void findRegExp(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             String str;
             Pattern pattern = Pattern.compile(patternStr);
@@ -47,7 +37,7 @@ public class LogParser {
         }
     }
 
-    public static void openFileOrDir(String dirName, OpenFIleMode mode) throws IOException {
+    public void openFileOrDir(String dirName, OpenFIleMode mode) throws IOException {
         File dir = new File(dirName);
         if (dir.isDirectory()) {
             for (File item : dir.listFiles()) {
@@ -70,7 +60,7 @@ public class LogParser {
         }
     }
 
-    public static void splitFile(String fileName) {
+    public void splitFile(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFileNameSplit))) {
                 String str;
@@ -109,13 +99,4 @@ public class LogParser {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-
-        setNewFileNameSplit("splitFileOld.csv");
-        setSplitterType(';');
-        openFileOrDir("main.log",OpenFIleMode.SPLIT_FILE);
-        setNewFileNameRegExp("regExp_new.txt");
-        setPatternStr("[0-9]+[.]+[0-9]+[.]+[0-9]+[.]+[0-9]+[:]+[0-9]+");
-        openFileOrDir("LOGS", OpenFIleMode.FIND_REG_EXP);
-    }
 }
