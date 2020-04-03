@@ -7,12 +7,29 @@ import java.util.regex.Pattern;
 public class LogParser {
 
     static String patternStr;
-    static String newFileName;
+    static String newFileNameRegExp;
+    static char splitterType;
+    static String newFileNameSplit;
     static BufferedWriter writer;
 
-    public LogParser(String patternStr, String newFileName) {
+    public static void setPatternStr(String patternStr) {
         LogParser.patternStr = patternStr;
-        LogParser.newFileName = newFileName;
+    }
+
+    public static void setNewFileNameRegExp(String newFileNameRegExp) {
+        LogParser.newFileNameRegExp = newFileNameRegExp;
+    }
+
+    public static void setSplitterType(char splitterType) {
+        LogParser.splitterType = splitterType;
+    }
+
+    public static void setNewFileNameSplit(String newFileNameSplit) {
+        LogParser.newFileNameSplit = newFileNameSplit;
+    }
+
+    public static void setWriter(BufferedWriter writer) {
+        LogParser.writer = writer;
     }
 
     public static void findRegExp(String fileName) {
@@ -30,24 +47,32 @@ public class LogParser {
         }
     }
 
-    public static void getFiles(String dirName) throws IOException {
+    public static void openFileOrDir(String dirName, OpenFIleMode mode) throws IOException {
         File dir = new File(dirName);
-        writer = new BufferedWriter(new FileWriter(newFileName));
         if (dir.isDirectory()) {
             for (File item : dir.listFiles()) {
                 if (!item.isDirectory()) {
-                    findRegExp(item.getName());
+                    if (mode == OpenFIleMode.FIND_REG_EXP){
+                        writer = new BufferedWriter(new FileWriter(newFileNameRegExp));
+                        findRegExp(item.getName());
+                        writer.close();
+                    } else if (mode == OpenFIleMode.SPLIT_FILE){
+                        splitFile(item.getName());
+                    }
                 }
             }
-        } else {
+        } else if (mode == OpenFIleMode.FIND_REG_EXP){
+            writer = new BufferedWriter(new FileWriter(newFileNameRegExp));
             findRegExp(dirName);
+            writer.close();
+        } else if (mode == OpenFIleMode.SPLIT_FILE){
+            splitFile(dirName);
         }
-        writer.close();
     }
 
     public static void splitFile(String fileName) {
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter("splitFile.csv"))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFileNameSplit))) {
                 String str;
                 Pattern patternMessType = Pattern.compile("DEBUG:|TRACE:|INFO|WARN");
                 Pattern patternAddress = Pattern.compile("[0-9]+[.]+[0-9]+[.]+[0-9]+[.]+[0-9]+[:]+[0-9]+");
@@ -74,7 +99,7 @@ public class LogParser {
                     else {
                         info = bufferEnd.substring(2, bufferEnd.length());
                     }
-                    writer.write(bufferBegin + ";" + address + ";" + info + "\n");
+                    writer.write(bufferBegin + splitterType + address + splitterType + info + "\n");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -85,6 +110,12 @@ public class LogParser {
     }
 
     public static void main(String[] args) throws IOException {
-        splitFile("main.log");
+
+        setNewFileNameSplit("splitFileOld.csv");
+        setSplitterType(';');
+        openFileOrDir("main.log",OpenFIleMode.SPLIT_FILE);
+        setNewFileNameRegExp("regExp_new.txt");
+        setPatternStr("[0-9]+[.]+[0-9]+[.]+[0-9]+[.]+[0-9]+[:]+[0-9]+");
+        openFileOrDir("LOGS", OpenFIleMode.FIND_REG_EXP);
     }
 }
